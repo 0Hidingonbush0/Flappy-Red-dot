@@ -24,7 +24,6 @@ class Variables():
     game_active=True
     skore=0
     gravitace=0
-    jump_permission = True
 
 
     jump_timer = pg.USEREVENT + 1
@@ -58,9 +57,8 @@ class Reddot():
     
     def jump():
         keys= pg.key.get_pressed()
-        if keys[pg.K_SPACE] and Variables.jump_permission:
-            Variables.gravitace = -10
-            Variables.jump_permission = False
+        if keys[pg.K_SPACE]:
+            Variables.gravitace = -7
 
 
     def update():
@@ -87,14 +85,11 @@ class main():
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     sys.exit()
-                if event.type == Variables.jump_timer:
-                    Variables.jump_permission = True
                 if event.type == Variables.prekazky_timer:
                     y_pos = random.randint(600, 1000)
                     Variables.prekazky_r_list.append(Variables.prekazka_bot.get_rect(midbottom=(500, y_pos)))
                 if event.type == pg.MOUSEBUTTONDOWN:
                     Variables.gravitace = -10
-                    Variables.jump_permission = False
 
 
             screen.fill("black")
