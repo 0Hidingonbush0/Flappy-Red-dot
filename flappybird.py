@@ -11,14 +11,15 @@ clock = pg.time.Clock()
 
 class Variables():
     font_69 = pg.font.Font("Font/UpheavalPro.ttf", 60)
-    font_40 = pg.font.Font("Font/UpheavalPro.ttf", 60)
+    font_40 = pg.font.Font("Font/UpheavalPro.ttf", 40)
+    font_30 = pg.font.Font("Font/UpheavalPro.ttf", 30)
 
     red_dot = pg.image.load("Veci/red_dot.jpg").convert_alpha()
     red_dot_r = red_dot.get_rect(center=(75, 525/2))
 
     prekazka_bot =pg.image.load("Veci/prekazky/1.jpg").convert_alpha()
-    prekazka_bot_r = prekazka_bot.get_rect(midbottom= (175, 725))
 
+    prekazka_top = pg.image.load("Veci/prekazky/2.jpg").convert_alpha()
     prekazky_r_list=[]
 
     game_active=True
@@ -32,7 +33,10 @@ class Variables():
 
     prekazky_timer=pg.USEREVENT + 2
     pg.time.set_timer(prekazky_timer,2750)
-class Intro_or_Outro():
+
+    score_timer= pg.USEREVENT + 3
+    pg.time.set_timer(score_timer, 4000)
+class Intro_or_Outro_and_Score():
     
     def intro(font_intro):
         screen.fill("grey")
@@ -43,6 +47,12 @@ class Intro_or_Outro():
         press_start = Variables.font_69.render("Pro spuštění stiskni libovolnou klávesu", False, "red")
         press_start_rect = press_start.get_rect(midtop=(175, 200))
         screen.blit(press_start, press_start_rect)
+    
+    def score():
+        skore = Variables.font_30.render(f"Skóre: {Variables.skore}", False, "red")
+        skore_r = skore.get_rect(topleft= (20, 20))
+        screen.blit(skore, skore_r)
+
 
 
 # class red dot
@@ -69,13 +79,15 @@ class Prekazky():
     def prekazka(prekazky_list):
         if prekazky_list:
             for prekazky in prekazky_list:
-                prekazky.x -= 5
+                prekazky.x -= 4.1
                 screen.blit(Variables.prekazka_bot, prekazky)
+                screen.blit(Variables.prekazka_top, prekazky)
+
+            prekazky_list= [prekazky for prekazky in prekazky_list if prekazky.x <0 ]    
             return prekazky_list
         else:
             return []
 
-    
     def update():
         Prekazky.prekazka(Variables.prekazky_r_list)
 
@@ -85,9 +97,16 @@ class main():
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     sys.exit()
+
+
                 if event.type == Variables.prekazky_timer:
-                    y_pos = random.randint(600, 1000)
+                    y_pos = random.randint(700, 1000)
                     Variables.prekazky_r_list.append(Variables.prekazka_bot.get_rect(midbottom=(500, y_pos)))
+                    Variables.prekazky_r_list.append(Variables.prekazka_top.get_rect(midbottom=(500, y_pos - 600)))
+
+                
+                if event.type == Variables.score_timer:
+                    Variables.skore+=1
                 if event.type == pg.MOUSEBUTTONDOWN:
                     Variables.gravitace = -10
 
