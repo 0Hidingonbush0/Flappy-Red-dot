@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
-import time
+import random
+
 #Základní parametry
 pg.init()
 screen = pg.display.set_mode((350, 525))
@@ -15,12 +16,23 @@ class Variables():
     red_dot = pg.image.load("Veci/red_dot.jpg").convert_alpha()
     red_dot_r = red_dot.get_rect(center=(75, 525/2))
 
+    prekazka_bot =pg.image.load("Veci/prekazky/1.jpg").convert_alpha()
+    prekazka_bot_r = prekazka_bot.get_rect(midbottom= (175, 725))
+
+    prekazky_r_list=[]
+
     game_active=True
     skore=0
     gravitace=0
     jump_permission = True
+
+
     jump_timer = pg.USEREVENT + 1
-    pg.time.set_timer(jump_timer, 200)
+    pg.time.set_timer(jump_timer, 150)
+
+
+    prekazky_timer=pg.USEREVENT + 2
+    pg.time.set_timer(prekazky_timer,2750)
 class Intro_or_Outro():
     
     def intro(font_intro):
@@ -55,6 +67,20 @@ class Reddot():
         Reddot.gravitace()
         Reddot.jump()
 
+class Prekazky():
+    def prekazka(prekazky_list):
+        if prekazky_list:
+            for prekazky in prekazky_list:
+                prekazky.x -= 5
+                screen.blit(Variables.prekazka_bot, prekazky)
+            return prekazky_list
+        else:
+            return []
+
+    
+    def update():
+        Prekazky.prekazka(Variables.prekazky_r_list)
+
 class main():
     def obraz():
         while True:
@@ -63,9 +89,18 @@ class main():
                     sys.exit()
                 if event.type == Variables.jump_timer:
                     Variables.jump_permission = True
+                if event.type == Variables.prekazky_timer:
+                    y_pos = random.randint(600, 1000)
+                    Variables.prekazky_r_list.append(Variables.prekazka_bot.get_rect(midbottom=(500, y_pos)))
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    Variables.gravitace = -10
+                    Variables.jump_permission = False
+
+
             screen.fill("black")
             screen.blit(Variables.red_dot, Variables.red_dot_r)
             Reddot.update()
+            Prekazky.update()
 
             
             pg.display.update()
