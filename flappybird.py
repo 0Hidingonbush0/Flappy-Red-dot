@@ -2,6 +2,8 @@ import pygame as pg
 import sys
 import random
 
+from pygame.constants import KEYDOWN
+
 #Základní parametry
 pg.init()
 screen = pg.display.set_mode((350, 525))
@@ -10,9 +12,9 @@ clock = pg.time.Clock()
 
 
 class Variables():
-    font_69 = pg.font.Font("Font/UpheavalPro.ttf", 60)
-    font_40 = pg.font.Font("Font/UpheavalPro.ttf", 40)
     font_30 = pg.font.Font("Font/UpheavalPro.ttf", 30)
+    font_40 = pg.font.Font("Font/UpheavalPro.ttf", 40)
+    font_10 = pg.font.Font("Font/UpheavalPro.ttf", 15)
 
     red_dot = pg.image.load("Veci/red_dot.jpg").convert_alpha()
     red_dot_r = red_dot.get_rect(center=(75, 525/2))
@@ -22,7 +24,7 @@ class Variables():
     prekazka_top = pg.image.load("Veci/prekazky/2.jpg").convert_alpha()
     prekazky_r_list=[]
 
-    game_active=True
+    game_active=False
     skore=0
     gravitace=0
 
@@ -35,23 +37,25 @@ class Variables():
     pg.time.set_timer(prekazky_timer,2750)
 
     score_timer= pg.USEREVENT + 3
-    pg.time.set_timer(score_timer, 4000)
+    pg.time.set_timer(score_timer, 2262)
 class Intro_or_Outro_and_Score():
     
-    def intro(font_intro):
+    def intro():
         screen.fill("grey")
-        screen.blit(Reddot.red_dot, Reddot.red_dot_r)
-        font_intro = Variables.font_69.render("Red Dot", False, "red")
+        redot_intro = Variables.red_dot.get_rect(center= (350/2, 525/2))
+        screen.blit(Variables.red_dot, redot_intro)
+        font_intro = Variables.font_40.render("Red Dot", False, "red")
         font_intro_r = font_intro.get_rect(midtop=(175, 20))
         screen.blit(font_intro, font_intro_r)
-        press_start = Variables.font_69.render("Pro spuštění stiskni libovolnou klávesu", False, "red")
-        press_start_rect = press_start.get_rect(midtop=(175, 200))
+        press_start = Variables.font_10.render("Pro spuštění stiskni libovolnou klávesu", False, "red")
+        press_start_rect = press_start.get_rect(midtop=(175, 300))
         screen.blit(press_start, press_start_rect)
     
     def score():
         skore = Variables.font_30.render(f"Skóre: {Variables.skore}", False, "red")
         skore_r = skore.get_rect(topleft= (20, 20))
         screen.blit(skore, skore_r)
+        return skore
 
 
 
@@ -88,6 +92,13 @@ class Prekazky():
         else:
             return []
 
+    def dotyk(redot, prekazka):
+        if prekazka:
+            for x in prekazka:
+                if redot.colliderect(x):
+                    return False
+        else:
+            return True
     def update():
         Prekazky.prekazka(Variables.prekazky_r_list)
 
@@ -104,17 +115,23 @@ class main():
                     Variables.prekazky_r_list.append(Variables.prekazka_bot.get_rect(midbottom=(500, y_pos)))
                     Variables.prekazky_r_list.append(Variables.prekazka_top.get_rect(midbottom=(500, y_pos - 600)))
 
+                if event.type == pg.KEYDOWN:
+                    Variables.game_active = True
                 
                 if event.type == Variables.score_timer:
                     Variables.skore+=1
                 if event.type == pg.MOUSEBUTTONDOWN:
                     Variables.gravitace = -10
 
-
-            screen.fill("black")
-            screen.blit(Variables.red_dot, Variables.red_dot_r)
-            Reddot.update()
-            Prekazky.update()
+            if Variables.game_active:
+                screen.fill("black")
+                screen.blit(Variables.red_dot, Variables.red_dot_r)
+                Reddot.update()
+                Prekazky.update()
+                skore = Intro_or_Outro_and_Score.score()
+            else:
+                Variables.prekazky_r_list.clear()
+                Intro_or_Outro_and_Score.intro()
 
             
             pg.display.update()
