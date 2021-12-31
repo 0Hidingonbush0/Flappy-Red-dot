@@ -19,13 +19,18 @@ class Variables():
     red_dot = pg.image.load("Veci/red_dot.jpg").convert_alpha()
     red_dot_r = red_dot.get_rect(center=(75, 525/2))
 
+    skorovac = pg.image.load("Veci/prekazky/skorovac.jpg").convert_alpha()
+    skorovac_list= []
+
     prekazka_bot =pg.image.load("Veci/prekazky/1.jpg").convert_alpha()
 
     prekazka_top = pg.image.load("Veci/prekazky/2.jpg").convert_alpha()
     prekazky_r_list=[]
 
+    intro_outro_sw = False
+
     game_active=False
-    skore=0
+    skore= 0
     gravitace=0
 
 
@@ -36,8 +41,7 @@ class Variables():
     prekazky_timer=pg.USEREVENT + 2
     pg.time.set_timer(prekazky_timer,2750)
 
-    score_timer= pg.USEREVENT + 3
-    pg.time.set_timer(score_timer, 2262)
+
 class Intro_or_Outro_and_Score():
     
     def intro():
@@ -51,11 +55,21 @@ class Intro_or_Outro_and_Score():
         press_start_rect = press_start.get_rect(midtop=(175, 300))
         screen.blit(press_start, press_start_rect)
     
-    def score():
+    def score(hrac, skorovac):
+        global Variables
+        if skorovac:
+            for s in skorovac:
+                s.x -= 4.1
+                screen.blit(Variables.skorovac, s)
+            for x in skorovac:
+                if hrac.colliderect(x):
+                    Variables.skore +=1
+                    skorovac.remove(x)
+            skorovac = [x for x in skorovac if x.x < 90]
         skore = Variables.font_30.render(f"Skóre: {Variables.skore}", False, "red")
         skore_r = skore.get_rect(topleft= (20, 20))
         screen.blit(skore, skore_r)
-        return skore
+        return skorovac
 
 
 
@@ -96,12 +110,12 @@ class Prekazky():
         if prekazka:
             for x in prekazka:
                 if redot.colliderect(x):
-                    return False
-        else:
-            return True
+                    Variables.game_active= False
+        #else:
+            #return True
     def update():
         Prekazky.prekazka(Variables.prekazky_r_list)
-
+        Prekazky.dotyk(Variables.red_dot_r, Variables.prekazky_r_list)
 class main():
     def obraz():
         while True:
@@ -113,13 +127,13 @@ class main():
                 if event.type == Variables.prekazky_timer:
                     y_pos = random.randint(700, 1000)
                     Variables.prekazky_r_list.append(Variables.prekazka_bot.get_rect(midbottom=(500, y_pos)))
-                    Variables.prekazky_r_list.append(Variables.prekazka_top.get_rect(midbottom=(500, y_pos - 600)))
+                    Variables.prekazky_r_list.append(Variables.prekazka_top.get_rect(midbottom=(500, y_pos - 625)))
+                    Variables.skorovac_list.append(Variables.skorovac.get_rect(topleft=(525, y_pos-625)))
 
                 if event.type == pg.KEYDOWN:
                     Variables.game_active = True
-                
-                if event.type == Variables.score_timer:
-                    Variables.skore+=1
+
+
                 if event.type == pg.MOUSEBUTTONDOWN:
                     Variables.gravitace = -10
 
@@ -128,10 +142,21 @@ class main():
                 screen.blit(Variables.red_dot, Variables.red_dot_r)
                 Reddot.update()
                 Prekazky.update()
-                skore = Intro_or_Outro_and_Score.score()
+                
+                skore = Intro_or_Outro_and_Score.score(Variables.red_dot_r, Variables.skorovac_list)
+
             else:
-                Variables.prekazky_r_list.clear()
-                Intro_or_Outro_and_Score.intro()
+                if Variables.skore > 0:
+                    Intro_or_Outro_and_Score.intro()
+                    skore = Variables.font_30.render(f" Tvoje skóre: {Variables.skore}", False, "red")
+                    skore_r = skore.get_rect(midbottom= (175, 360))
+                    screen.blit(skore, skore_r)
+                    Variables.skore = 0
+                    Variables.prekazky_r_list.clear()
+                else:
+                    Variables.skore = 0
+                    Variables.prekazky_r_list.clear()
+                    Intro_or_Outro_and_Score.intro()
 
             
             pg.display.update()
