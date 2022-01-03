@@ -54,6 +54,10 @@ class Intro_or_Outro_and_Score():
         press_start = Variables.font_10.render("Pro spuštění stiskni libovolnou klávesu", False, "red")
         press_start_rect = press_start.get_rect(midtop=(175, 300))
         screen.blit(press_start, press_start_rect)
+        if Variables.skore >= 1:
+            skore = Variables.font_30.render(f" Tvoje skóre: {Variables.skore}", False, "red")
+            skore_r = skore.get_rect(midbottom= (175, 360))
+            screen.blit(skore, skore_r)
     
     def score(hrac, skorovac):
         global Variables
@@ -62,7 +66,7 @@ class Intro_or_Outro_and_Score():
                 s.x -= 4.1
                 screen.blit(Variables.skorovac, s)
             for x in skorovac:
-                if hrac.colliderect(x):
+                if hrac.colliderect(x): 
                     Variables.skore +=1
                     skorovac.remove(x)
             skorovac = [x for x in skorovac if x.x < 90]
@@ -132,6 +136,7 @@ class main():
 
                 if event.type == pg.KEYDOWN:
                     Variables.game_active = True
+                    Variables.skore = 0
 
 
                 if event.type == pg.MOUSEBUTTONDOWN:
@@ -148,17 +153,16 @@ class main():
             else:
                 if Variables.skore > 0:
                     Intro_or_Outro_and_Score.intro()
-                    skore = Variables.font_30.render(f" Tvoje skóre: {Variables.skore}", False, "red")
-                    skore_r = skore.get_rect(midbottom= (175, 360))
-                    screen.blit(skore, skore_r)
-                    Variables.skore = 0
                     Variables.prekazky_r_list.clear()
+                    Variables.skorovac_list.clear()
                 else:
-                    Variables.skore = 0
+                    Variables.skorovac_list.clear()
                     Variables.prekazky_r_list.clear()
                     Intro_or_Outro_and_Score.intro()
 
             
             pg.display.update()
             clock.tick(60)
+
+
 main.obraz()
