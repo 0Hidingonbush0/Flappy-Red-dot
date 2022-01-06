@@ -1,4 +1,4 @@
-# Flappy-Red-dot
+# Flappy Red dot
 
 some kind of flappy bird, but with the red dot
 
