@@ -12,9 +12,9 @@ clock = pg.time.Clock()
 
 
 class Variables():
-    font_30 = pg.font.Font("Font/UpheavalPro.ttf", 30)
-    font_40 = pg.font.Font("Font/UpheavalPro.ttf", 40)
-    font_10 = pg.font.Font("Font/UpheavalPro.ttf", 15)
+    def font(x):
+        font = pg.font.Font("Font/UpheavalPro.ttf", x)
+        return font
 
     red_dot = pg.image.load("Veci/red_dot.jpg").convert_alpha()
     red_dot_r = red_dot.get_rect(center=(75, 525/2))
@@ -48,14 +48,14 @@ class Intro_or_Outro_and_Score():
         screen.fill("grey")
         redot_intro = Variables.red_dot.get_rect(center= (350/2, 525/2))
         screen.blit(Variables.red_dot, redot_intro)
-        font_intro = Variables.font_40.render("Red Dot", False, "red")
+        font_intro = Variables.font(40).render("Red Dot", False, "red")
         font_intro_r = font_intro.get_rect(midtop=(175, 20))
         screen.blit(font_intro, font_intro_r)
-        press_start = Variables.font_10.render("Pro spuštění stiskni libovolnou klávesu", False, "red")
+        press_start = Variables.font(10).render("Pro spuštění stiskni libovolnou klávesu", False, "red")
         press_start_rect = press_start.get_rect(midtop=(175, 300))
         screen.blit(press_start, press_start_rect)
         if Variables.skore >= 1:
-            skore = Variables.font_30.render(f" Tvoje skóre: {Variables.skore}", False, "red")
+            skore = Variables.font(30).render(f" Tvoje skóre: {Variables.skore}", False, "red")
             skore_r = skore.get_rect(midbottom= (175, 360))
             screen.blit(skore, skore_r)
     
